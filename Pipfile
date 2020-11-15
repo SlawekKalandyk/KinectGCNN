@@ -1,0 +1,16 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+pylint = "*"
+numpy = "*"
+opencv-python = "==3.4.11.45"
+open3d = "*"
+matplotlib = "*"
+
+[requires]
+python_version = "3.7"
