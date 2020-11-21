@@ -1,6 +1,6 @@
 import os
 import json
-
+import numpy as np
 
 def determine_filepath(dir_name: str, label: str) -> str:
     save_dir = dir_name + '/' + label
@@ -24,4 +24,4 @@ def save_to_json(filename: str, data):
 
 def from_json(filename:str):
     with open(filename, 'r') as file:
-        return json.loads(file)
+        return np.array(json.loads(file.read()))

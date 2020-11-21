@@ -19,16 +19,36 @@ def to_point_cloud(depth, cx, cy, fx, fy) -> np.ndarray:
     return depth_cloud
 
 
-def visualize_point_cloud(point_clouds):
+def _set_axes_radius(ax, origin, radius):
+    x, y, z = origin
+    ax.set_xlim3d([x - radius, x + radius])
+    ax.set_ylim3d([y - radius, y + radius])
+    ax.set_zlim3d([z - radius, z + radius])
+
+
+def _set_axes_equal(ax: plt.Axes):
+    ax.set_box_aspect([1,1,1])
+    limits = np.array([
+        ax.get_xlim3d(),
+        ax.get_ylim3d(),
+        ax.get_zlim3d(),
+    ])
+    origin = np.mean(limits, axis=1)
+    radius = 0.5 * np.max(np.abs(limits[:, 1] - limits[:, 0]))
+    _set_axes_radius(ax, origin, radius)
+
+
+def visualize_point_cloud(point_clouds, point_visual_size):
     i = 1
     for point_cloud in point_clouds:
         plt.figure(i)
         ax = plt.axes(projection='3d')
-        ax.scatter(point_cloud[:,0], point_cloud[:,1], point_cloud[:,2], s=0.01)
+        ax.scatter(point_cloud[:,0], point_cloud[:,1], point_cloud[:,2], s=point_visual_size)
         ax.set_xlabel('x')
         ax.set_ylabel('y')
         ax.set_zlabel('z')
         i += 1
+        _set_axes_equal(ax)
     plt.show()
 
 
