@@ -3,13 +3,13 @@ import matplotlib.pyplot as plt
 import open3d as o3d
 import os
 import tempfile
-
+from math import sqrt
 
 def to_point_cloud(depth, cx, cy, fx, fy) -> np.ndarray:
     rows, cols = depth.shape
     c, r = np.meshgrid(np.arange(cols), np.arange(rows), sparse=True)
     valid = (depth > 0) & (depth < 4500)
-    z = np.where(valid, depth / 4499, np.nan)
+    z = np.where(valid, depth / 1000, np.nan)
     x = np.where(valid, z * (c - cx) / fx, 0)
     y = np.where(valid, z * (r - cy) / fy, 0)
     cloud_3d = np.dstack((x, y, z))
@@ -52,10 +52,54 @@ def visualize_point_cloud(point_clouds, point_visual_size):
     plt.show()
 
 
-def remove_outliers(point_cloud) -> (np.ndarray, np.ndarray):
+def remove_outliers(point_cloud, neighbours, std) -> (np.ndarray, np.ndarray):
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(point_cloud)
 
-    cl, _ = pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=0.01)
+    cl, _ = pcd.remove_statistical_outlier(neighbours, std)
     
     return np.asarray(cl.points)
+
+
+def _point_distance_3d(point1, point2):
+    sum = 0
+    for i in range(0, 3):
+        sum += (point2[i] - point1[i]) ** 2
+    return sqrt(sum)
+
+
+def _traverse_ring(ring, new_object, rings, traversed_rings):
+    new_object.append(ring)
+    traversed_rings.append(ring)
+    for child_ring in rings[ring]:
+        _traverse_ring(child_ring, new_object, rings, traversed_rings)
+
+
+def region_growing(point_cloud, radius) -> np.ndarray:
+    # { (x, y, z): [[a, b, c], ...]}
+    rings = {}
+    # create a ring on point iteration
+    # add only new points to existing rings
+    for point in point_cloud:
+        point_as_tuple = tuple(point)
+        rings[point_as_tuple] = []
+        for ring in rings:
+            if point_as_tuple == ring:
+                continue
+            elif _point_distance_3d(point_as_tuple, ring) < radius:
+                rings[ring].append(point_as_tuple)
+                break
+
+    objects = []
+    traversed_rings = []
+
+    for ring in rings:
+        if ring in traversed_rings:
+            continue
+        else:
+            new_object = []
+            _traverse_ring(ring, new_object, rings, traversed_rings)
+            objects.append(new_object)
+
+    objects.sort(key=lambda x: len(x), reverse=True)
+    return np.asarray(objects[0])
