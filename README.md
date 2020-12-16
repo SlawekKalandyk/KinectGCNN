@@ -6,7 +6,7 @@
 
 ### Kroki
 Korzystając z Makefile:
-1. make install
-2. make run
+1. make install - instalacja potrzebnych pakietów
+2. make run - uruchomienie rejestracji pojedynczej klatki z Kinecta i zapisanie wyników.
 
-Wyniki pojawią się w folderze recorded_frames.
+Wyniki pojawią się w folderze recorded_frames w postaci plików *.ply.
