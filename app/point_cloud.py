@@ -52,13 +52,35 @@ def visualize_point_cloud(point_clouds, point_visual_size):
     plt.show()
 
 
-def remove_outliers(point_cloud, neighbours, std) -> (np.ndarray, np.ndarray):
+def remove_statistical_outliers(point_cloud, neighbours, std):
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(point_cloud)
 
     cl, _ = pcd.remove_statistical_outlier(neighbours, std)
     
     return np.asarray(cl.points)
+
+
+def remove_radial_outliers(point_cloud, neighbours, radius):
+    pcd = o3d.geometry.PointCloud()
+    pcd.points = o3d.utility.Vector3dVector(point_cloud)
+
+    cl, _ = pcd.remove_radius_outlier(neighbours, radius)
+    
+    return np.asarray(cl.points)
+
+# depth_frame: h x w x 1
+# color_frame: h x w x 4
+# r_range, g_range, b_range: (a, b), where a and b are from [0, 255] and a < b
+def remove_floor_based_on_color_frame(depth_frame, color_frame, r_range, g_range, b_range):
+    for i in range(depth_frame.shape[0]):
+        for j in range(depth_frame.shape[1]):
+            color_pixel = color_frame[i, j]
+            if color_pixel[0] > r_range[0] and color_pixel[0] < r_range[1] and color_pixel[1] > g_range[0] and color_pixel[1] < g_range[1] \
+                and color_pixel[2] > b_range[0] and color_pixel[2] < b_range[1]:
+                depth_frame[i, j] = 0
+    
+    return depth_frame
 
 
 def _point_distance_3d(point1, point2):

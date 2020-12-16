@@ -129,3 +129,9 @@ dmypy.json
 .pyre/
 
 .vscode/
+
+/2ndbatch*
+/2ndbatch
+
+/saved_data
+/saved_data_2
