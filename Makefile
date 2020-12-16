@@ -1,8 +1,10 @@
+PIPENV=python -m pipenv
+
 .PHONY: install
 install:
-	pipenv install
-	pipenv run pip install PyKinect2-master.zip
+	$(PIPENV) install
+	$(PIPENV) run pip install PyKinect2-master.zip
 
 .PHONY: run
 run:
-	pipenv run py -m app
+	$(PIPENV) run python -m app

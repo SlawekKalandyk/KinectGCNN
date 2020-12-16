@@ -11,6 +11,7 @@ numpy = "*"
 opencv-python = "==3.4.11.45"
 open3d = "*"
 matplotlib = "*"
+pyqt5 = "==5.9.2"
 
 [requires]
 python_version = "3.7"

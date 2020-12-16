@@ -41,13 +41,14 @@ def _set_axes_equal(ax: plt.Axes):
 
 def visualize_point_cloud(point_clouds, point_visual_size):
     i = 1
-    for point_cloud in point_clouds:
+    for cloud_name, point_cloud in point_clouds.items():
         plt.figure(i)
         ax = plt.axes(projection='3d')
         ax.scatter(point_cloud[:,0], point_cloud[:,1], point_cloud[:,2], s=point_visual_size)
         ax.set_xlabel('x')
         ax.set_ylabel('y')
         ax.set_zlabel('z')
+        plt.title(cloud_name)
         i += 1
         _set_axes_equal(ax)
     plt.show()
