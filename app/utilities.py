@@ -25,3 +25,23 @@ def save_to_json(filename: str, data):
 def from_json(filename:str):
     with open(filename, 'r') as file:
         return np.array(json.loads(file.read()))
+
+
+def write_ply(cloud, outfile: str):
+    lines = []
+
+    lines += [
+        'ply',
+        'format ascii 1.0',
+        f'element vertex {len(cloud)}',
+        'property float x',
+        'property float y',
+        'property float z',
+        'end_header',
+    ]
+
+    for point in cloud:
+        lines.append(f'{point[0]:.6} {point[1]:.6} {point[2]:.6}')
+
+    with open(outfile, 'w', encoding='utf-8') as writer:
+        writer.write('\n'.join(lines))

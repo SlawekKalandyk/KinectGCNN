@@ -5,6 +5,7 @@ import os
 import tempfile
 from math import sqrt
 
+
 def to_point_cloud(depth, cx, cy, fx, fy) -> np.ndarray:
     rows, cols = depth.shape
     c, r = np.meshgrid(np.arange(cols), np.arange(rows), sparse=True)
@@ -71,7 +72,7 @@ def remove_radial_outliers(point_cloud, neighbours, radius):
 
 # depth_frame: h x w x 1
 # color_frame: h x w x 4
-# r_range, g_range, b_range: (a, b), where a and b are from [0, 255] and a < b
+# r_range, g_range, b_range: (a, b), where 0 <= a <= b <= 255
 def remove_floor_based_on_color_frame(depth_frame, color_frame, r_range, g_range, b_range):
     for i in range(depth_frame.shape[0]):
         for j in range(depth_frame.shape[1]):
@@ -123,5 +124,6 @@ def region_growing(point_cloud, radius) -> np.ndarray:
             _traverse_ring(ring, new_object, rings, traversed_rings)
             objects.append(new_object)
 
+    # return only the largest object
     objects.sort(key=lambda x: len(x), reverse=True)
     return np.asarray(objects[0])
